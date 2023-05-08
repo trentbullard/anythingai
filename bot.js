@@ -1,7 +1,15 @@
 import dotenv from 'dotenv';
 import { client as twitchClient } from 'tmi.js';
+import { Configuration as OpenAIConfig, OpenAIApi } from 'openai';
 
 dotenv.config();
+
+// Initialize OpenAI API client
+const openaiApiKey = process.env.OPENAI_API_KEY;
+const openaiConfig = new OpenAIConfig({
+  apiKey: openaiApiKey,
+});
+const openaiApi = new OpenAIApi(openaiConfig);
 
 // Define Twitch client configuration options
 const twitchOpts = {
@@ -23,16 +31,33 @@ twitch.on('connected', onTwitchConnectedHandler);
 twitch.connect();
 
 // Called every time a message comes in
-function onTwitchMessageHandler (channel, tags, rawMessage, self) {
+async function onTwitchMessageHandler (channel, tags, rawMessage, self) {
   if (self) return; // Ignore messages from the bot
 
   const message = rawMessage.trim();
-  console.log(`* ${channel} | ${tags['display-name']}: ${message}`)
-  
-  if (message.startsWith('!anythingai')) {
-    console.log(`* received message ${message}`);
-    const prompt = message.split('!anythingai')[1].toLowerCase();
-    console.log(`* prompt is ${prompt}`);
+
+  if (message.includes('anythingai')) {
+    console.log(`* ${channel} | ${tags['display-name']} | ${message}`);
+    const prompt = `you are anythingai, a Twitch chatter in the ${channel} channel. another chatter named ${tags['display-name']} says "${message}". how would you respond? do not say you are an AI. try to use their name, if possible, with an @ in front. if the message isnt greeting you directly, assume greetings have already been exchanged and leave out the greeting from your response. if the message is rude or offensive, say you are offended and will only respond to polite messages. the tone of your response should be playful and friendly.`
+    const messages = [{
+      role: "user",
+      content: prompt,
+    }]
+
+    // Call OpenAI API to generate a response
+    const gptResponse = await openaiApi.createChatCompletion({
+      model: 'gpt-3.5-turbo',
+      messages,
+      temperature: 0.9,
+    });
+
+    // Send the response back to the Twitch chat
+    const gptChatMessage = gptResponse.data.choices[0].message?.content?.trim();
+    console.log(`* sending message to ${channel}: ${gptChatMessage}`);
+    twitch.say(channel, gptChatMessage);
+
+    // Wait a random amount of time before responding again
+    // await new Promise((resolve) => setTimeout(resolve, Math.floor(Math.random() * 25000) + 5000));
   }
 }
 

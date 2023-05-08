@@ -26,6 +26,7 @@
   "dependencies": {
     "dotenv": "^16.0.3",
     "openai": "^3.2.1",
-    "tmi.js": "^1.8.5"
+    "tmi.js": "^1.8.5",
+    "util": "^0.12.5"
   }
 }
