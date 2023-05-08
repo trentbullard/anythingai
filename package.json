@@ -24,8 +24,10 @@
   },
   "homepage": "https://github.com/trentbullard/anythingai#readme",
   "dependencies": {
+    "@elastic/elasticsearch": "^8.7.0",
     "dotenv": "^16.0.3",
     "openai": "^3.2.1",
+    "rate-limiter-flexible": "^2.4.1",
     "tmi.js": "^1.8.5",
     "util": "^0.12.5"
   }
