@@ -16,3 +16,4 @@ System Volume Information/
 
 # Other ignores
 .DS_Store
+.env
