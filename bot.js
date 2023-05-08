@@ -37,27 +37,29 @@ async function onTwitchMessageHandler (channel, tags, rawMessage, self) {
   const message = rawMessage.trim();
 
   if (message.includes('anythingai')) {
-    console.log(`* ${channel} | ${tags['display-name']} | ${message}`);
-    const prompt = `you are anythingai, a Twitch chatter in the ${channel} channel. another chatter named ${tags['display-name']} says "${message}". how would you respond? do not say you are an AI. try to use their name, if possible, with an @ in front. if the message isnt greeting you directly, assume greetings have already been exchanged and leave out the greeting from your response. if the message is rude or offensive, say you are offended and will only respond to polite messages. the tone of your response should be playful and friendly.`
-    const messages = [{
-      role: "user",
-      content: prompt,
-    }]
-
-    // Call OpenAI API to generate a response
-    const gptResponse = await openaiApi.createChatCompletion({
-      model: 'gpt-3.5-turbo',
-      messages,
-      temperature: 0.9,
-    });
-
-    // Send the response back to the Twitch chat
-    const gptChatMessage = gptResponse.data.choices[0].message?.content?.trim();
-    console.log(`* sending message to ${channel}: ${gptChatMessage}`);
-    twitch.say(channel, gptChatMessage);
-
-    // Wait a random amount of time before responding again
-    // await new Promise((resolve) => setTimeout(resolve, Math.floor(Math.random() * 25000) + 5000));
+    try {
+      console.log(`* ${channel} | ${tags['display-name']} | ${message}`);
+      const prompt = `you are anythingai, a Twitch chatter in the ${channel} channel. another chatter named ${tags['display-name']} says "${message}". how would you respond? do not say you are an AI. try to use their name, if possible, with an @ in front. if the message isnt greeting you directly, assume greetings have already been exchanged and leave out the greeting from your response. if the message is rude or offensive, say you are offended and will only respond to polite messages. the tone of your response should be playful and friendly.`
+      const messages = [{
+        role: "user",
+        content: prompt,
+      }]
+  
+      // Call OpenAI API to generate a response
+      const gptResponse = await openaiApi.createChatCompletion({
+        model: 'gpt-3.5-turbo',
+        messages,
+        temperature: 0.9,
+      });
+  
+      // Send the response back to the Twitch chat
+      const gptChatMessage = gptResponse.data.choices[0].message?.content?.trim();
+      console.log(`* sending message to ${channel}: ${gptChatMessage}`);
+      twitch.say(channel, gptChatMessage);
+    } catch (err) {
+      console.error(err);
+      twitch.say(channel, "buh something went wrong");
+    }
   }
 }
 
