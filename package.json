@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/trentbullard/anythingai#readme",
   "dependencies": {
+    "dotenv": "^16.0.3",
     "tmi.js": "^1.8.5"
   }
 }
