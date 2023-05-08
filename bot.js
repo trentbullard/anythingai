@@ -1,9 +1,10 @@
-import { client as _client } from 'tmi.js';
 import dotenv from 'dotenv';
+import { client as twitchClient } from 'tmi.js';
+
 dotenv.config();
 
-// Define configuration options
-const opts = {
+// Define Twitch client configuration options
+const twitchOpts = {
   identity: {
     username: process.env.BOT_USERNAME,
     password: `oauth:${process.env.TWITCH_TOKEN}`,
@@ -11,18 +12,18 @@ const opts = {
   channels: process.env.CHANNELS.split(','),
 };
 
-// Create a client with our options
-const client = new _client(opts);
+// Create a Twitch client with our options
+const twitch = new twitchClient(twitchOpts);
 
 // Register our event handlers (defined below)
-client.on('message', onMessageHandler);
-client.on('connected', onConnectedHandler);
+twitch.on('message', onTwitchMessageHandler);
+twitch.on('connected', onTwitchConnectedHandler);
 
 // Connect to Twitch:
-client.connect();
+twitch.connect();
 
 // Called every time a message comes in
-function onMessageHandler (channel, tags, rawMessage, self) {
+function onTwitchMessageHandler (channel, tags, rawMessage, self) {
   if (self) return; // Ignore messages from the bot
 
   const message = rawMessage.trim();
@@ -36,6 +37,6 @@ function onMessageHandler (channel, tags, rawMessage, self) {
 }
 
 // Called every time the bot connects to Twitch chat
-function onConnectedHandler (addr, port) {
+function onTwitchConnectedHandler (addr, port) {
   console.log(`* Connected to ${addr}:${port}`);
 }
