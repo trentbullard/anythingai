@@ -1,4 +1,4 @@
-import { client } from 'tmi.js';
+import { client as _client } from 'tmi.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
@@ -12,7 +12,7 @@ const opts = {
 };
 
 // Create a client with our options
-const client = new client(opts);
+const client = new _client(opts);
 
 // Register our event handlers (defined below)
 client.on('message', onMessageHandler);
@@ -22,15 +22,16 @@ client.on('connected', onConnectedHandler);
 client.connect();
 
 // Called every time a message comes in
-function onMessageHandler (channel, tags, message, self) {
+function onMessageHandler (channel, tags, rawMessage, self) {
   if (self) return; // Ignore messages from the bot
 
+  const message = rawMessage.trim();
+  console.log(`* ${channel} | ${tags['display-name']}: ${message}`)
+  
   if (message.startsWith('!anythingai')) {
     console.log(`* received message ${message}`);
-    const prompt = message.split('!anythingai')[1].trim().toLowerCase();
+    const prompt = message.split('!anythingai')[1].toLowerCase();
     console.log(`* prompt is ${prompt}`);
-  } else {
-    console.log(`* 💀 i dont understand ${message}`);
   }
 }
 
