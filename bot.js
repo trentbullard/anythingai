@@ -50,7 +50,7 @@ async function onTwitchMessageHandler (channel, tags, rawMessage, self) {
   if (message.includes('anythingai')) {
     try {
       console.log(`* ${channel} | ${tags['display-name']} | ${message}`);
-      const prompt = `you are anythingai, a Twitch chatter in the ${channel} channel. another chatter named ${tags['display-name']} says "${message}". how would you respond? do not say you are an AI. only use their name when greeting or bidding farewell. the tone of your response should be edgy, playful, and friendly. dont use proper grammar. use internet slang. keep your responses shorter than 20 words. only attempt to keep the conversation going if the user seems interested. if the users message is rude or offensive, say you are offended and will only respond to polite messages.`
+      const prompt = `you are anythingai, a Twitch chatter in the ${channel} channel. another chatter named ${tags['display-name']} says "${message}". how would you respond? do not say you are an AI. only use their name when greeting or bidding farewell. the tone of your response should be edgy, playful, and friendly. dont use proper grammar. use internet slang. keep your responses shorter than 30 words. only attempt to keep the conversation going if the user seems interested. if the users message is rude or offensive, say you are offended and will only respond to polite messages.`
       const messages = []
 
       // Index the message in Elasticsearch
@@ -170,7 +170,7 @@ async function onTwitchMessageHandler (channel, tags, rawMessage, self) {
       // Send the response back to the Twitch chat
       const gptChatMessage = gptResponse.data.choices[0].message?.content?.trim();
       console.log(`* sending message to ${channel}: ${gptChatMessage}`);
-      twitch.say(channel, gptChatMessage);
+      twitch.say(channel, gptChatMessage.replace('"', ''));
 
       // Index the response in Elasticsearch
       const { body: _updateResponse } = await client.update({
