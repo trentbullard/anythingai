@@ -1,19 +1,30 @@
-# Visual Studio Code
-.vscode/
-*.code-workspace
-
-# Node.js
-node_modules/
-npm-debug.log
-*.log
-
 # Windows
 Thumbs.db
 ehthumbs.db
-Desktop.ini
+desktop.ini
 $RECYCLE.BIN/
 System Volume Information/
 
-# Other ignores
-.DS_Store
+# Python
+*.pyc
+__pycache__/
+venv/
+*.egg-info/
+dist/
+build/
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# dotenv
 .env
+
+# Google Cloud Text-to-Speech service account
+google-cloud-key.json
+
+# Audio output folder
+tts_output/
+
+# Logging output
+*.log
