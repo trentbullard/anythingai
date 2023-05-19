@@ -21,7 +21,7 @@ build/
 .env
 
 # Google Cloud Text-to-Speech service account
-google-cloud-key.json
+google-cloud-service-account.json
 
 # Audio output folder
 tts_output/
