@@ -1,0 +1,38 @@
+{
+  "commands": {
+    "module": "bot_config",
+    "function": "list_commands_command",
+    "async": false,
+    "help": "The commands command lists the commands i know how to execute. Usage: !commands"
+  },
+  "botname": {
+    "module": "bot_config",
+    "function": "bot_name_command",
+    "async": false,
+    "help": "The botname command changes the name i will go by in our conversations. If you dont supply a new name, i'll tell you what my current name is. My name must be a single word using only letters. Usage: !botname <new name>"
+  },
+  "myname": {
+    "module": "bot_config",
+    "function": "my_name_command",
+    "async": false,
+    "help": "The myname command changes what i will call you. If you dont supply a new name, i'll tell you what i currently know you as. If you want to change your name to something other than your discord name, i will only accept names that are a single word. Usage: !myname <new name>"
+  },
+  "randomcontact": {
+    "module": "bot_config",
+    "function": "random_contact_command",
+    "async": false,
+    "help": "The randomcontact command determines whether i will send you random messages. If you dont supply a command value, i will tell you whether i am currently allowed to send you random messages. Usage: !randomcontact <on/off>"
+  },
+  "randomcontactcooldown": {
+    "module": "bot_config",
+    "function": "random_contact_cooldown_command",
+    "async": false,
+    "help": "The randomcontactcooldown command determines how long i will wait after your last message to send you a random message. I cannot send random message if you have messaged me less than 6 hours ago, unfortunately. If you do not give me a new number of hours to wait, i will tell you the minimum number of hours i will wait before sending you a random message. Usage: !randomcontactcooldown <cooldown in hours>"
+  },
+  "personality": {
+    "module": "bot_config",
+    "function": "personality_command",
+    "async": false,
+    "help": "The personality command changes my personality. If you use the command without a personality, i will tell you which personality i am currently and the personalities i know how to be. Usage: !personality <name of personality>"
+  }
+}

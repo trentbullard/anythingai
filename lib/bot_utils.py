@@ -25,3 +25,12 @@ async def periodic_task(send_dm):
           logger.debug(f'chatbot random message: {chatgpt_response}')
           await send_dm(user, chatgpt_response)
           logger.debug(f'sent random message to {user}')
+
+
+def parse_commands(message):
+  if message.startswith('!'):
+    command = message.split(' ')[0][1:]
+    args = message.split(' ')[1:]
+    return command, args
+  else:
+    return None, None
