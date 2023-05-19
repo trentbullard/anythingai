@@ -1,0 +1,8 @@
+python-dotenv
+pydash
+discord
+discord.py[voice]
+elasticsearch
+openai
+humanize
+google-cloud-texttospeech
