@@ -5,7 +5,7 @@ import discord
 import json
 
 from lib.logger import logger
-from lib.es_utils import search_es, index_es, index_es_bot, parse_hits
+from lib.es_utils import search_es, index_es, index_es_bot, parse_hits, get_user_settings
 from lib.chatgpt_utils import send, build_context
 from lib.discord_utils import get_client, send_reply
 from lib.bot_utils import parse_commands
@@ -35,9 +35,19 @@ async def on_message(message):
     if message.channel.type not in [discord.ChannelType.private, discord.ChannelType.text]:
         return
 
-    logger.info(f'{message.author.display_name}: {message.content}')
-    # user = message.author.display_name
-    user = 'trent'
+    logger.info(f'({message.author.id}) {message.author.display_name}: {message.content}')
+    user_settings = get_user_settings(message.author.id)
+    logger.debug(f'User settings found for ({message.author.id}) {message.author.display_name}')
+    if user_settings is None:
+        user_settings = {
+            'user_id': message.author.id,
+            'user_name': message.author.display_name,
+            'bot_name': 'FriendBot',
+            'personality': 'standard',
+            'randomcontact': False,
+        }
+    else:
+        user_settings['user_id'] = message.author.id
 
     command_name, args = parse_commands(message.content)
     if command_name is not None:
@@ -72,11 +82,11 @@ async def on_message(message):
 
         return
 
-    messages = parse_hits(search_es(user))
-    id = index_es(user, message)
+    messages = parse_hits(search_es(user_settings['user_id']))
+    message_id = index_es(user_settings['user_id'], message)
     messages.append({'role': 'user', 'content': message.content})
     
-    context = build_context(user, messages)
+    context = build_context(user_settings, messages)
     logger.debug(context)
     chatgpt_response = send(context)
     logger.debug(chatgpt_response)
@@ -88,7 +98,7 @@ async def on_message(message):
 
     await send_reply(message, chatgpt_response)
 
-    index_es_bot(id, chatgpt_response)
+    index_es_bot(message_id, chatgpt_response)
 
 
 client.run(os.getenv('DISCORD_BOT_TOKEN'))

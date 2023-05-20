@@ -1,6 +1,3 @@
-import asyncio  # usage commented out below
-import os
-
 from dotenv import load_dotenv
 import discord
 

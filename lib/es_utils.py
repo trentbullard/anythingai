@@ -99,17 +99,16 @@ def get_user_list():
     return py_.map_(results['aggregations']['users']['buckets'], 'key')
 
 
-def get_user_settings(user):
+def get_user_settings(user_id):
     try:
-        response = es.get(index='usersettings', id=user)
+        response = es.get(index='usersettings', id=user_id)
         if 'found' in response and response['found']:
-            logger.debug(f'User settings found for {user}: ', response['_source'])
             return response['_source']
         else:
-            logger.warn(f'User settings not found for {user}')
+            logger.warn(f'User settings not found for {user_id}')
             return {}
     except Exception as e:
-        logger.error(f'Error retrieving user settings for {user}: {str(e)}')
+        logger.error(f'Error retrieving user settings for {user_id}: {str(e)}')
         return 
 
 
@@ -122,12 +121,12 @@ def create_user_settings(user_id, user_settings):
         return False
 
 
-def update_user_settings(user, field_values):
+def update_user_settings(user_id, field_values):
     try:
-        es.update(index='usersettings', id=user, body={'doc': field_values})
+        es.update(index='usersettings', id=user_id, body={'doc': field_values})
         return True
     except Exception as e:
-        logger.error(f'Error updating the user settings for {user}: {str(e)}')
+        logger.error(f'Error updating the user settings for {user_id}: {str(e)}')
         return False
 
 
