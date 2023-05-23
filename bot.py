@@ -36,7 +36,7 @@ async def on_message(message):
 
     if message.channel.type not in [discord.ChannelType.private, discord.ChannelType.text]:
         return
-
+    
     logger.info(f'({message.author.id}) {message.author.display_name}: {message.content}')
     user_settings = get_user_settings(message.author.id)
     logger.debug(f'User settings found for ({message.author.id}) {message.author.display_name}')
@@ -54,10 +54,12 @@ async def on_message(message):
         'next_random_message': get_random_message_datetime(24, 24 * 3, datetime.utcnow()),
     })
     
+    if user_settings['bot_name'].lower() not in message.clean_content.lower() or 'FriendBot' not in message.clean_content:
+        return
 
     user_settings['user_id'] = message.author.id
 
-    command_name, args = parse_commands(message.content)
+    command_name, args = parse_commands(message.clean_content)
     if command_name is not None:
         if command_name in commands:
             command_data = commands[command_name]
@@ -92,7 +94,7 @@ async def on_message(message):
 
     messages = parse_hits(search_es(user_settings['user_id']))
     message_id = index_es(user_settings['user_id'], message)
-    messages.append({'role': 'user', 'content': message.content})
+    messages.append({'role': 'user', 'content': message.clean_content})
     
     context = build_context(user_settings, messages)
     logger.debug(context)

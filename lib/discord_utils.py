@@ -8,6 +8,8 @@ load_dotenv()
 
 intents = discord.Intents.default()
 intents.members = True
+intents.presences = True
+intents.messages = True
 client = discord.Client(intents=intents)
 
 

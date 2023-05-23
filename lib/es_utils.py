@@ -16,11 +16,11 @@ es = Elasticsearch(hosts=[os.getenv('ELASTICSEARCH_URL')])
 def index_es(user_value, message_value, random_message=False):
     try:
         timestamp = f'{datetime.utcnow().isoformat()}Z'
-        res = es.index(index='chatbot', body={'user': user_value, 'user_message': message_value.content,
+        res = es.index(index='chatbot', body={'user': user_value, 'user_message': message_value.clean_content,
                        'channel_id': message_value.channel.id, 'timestamp': timestamp, 'random_message': random_message}, id=f'{user_value}-{timestamp}')
     except Exception as e:
         logger.error(
-            f'Error indexing message {message_value.content} from {user_value}: ', str(e))
+            f'Error indexing message {message_value.clean_content} from {user_value}: ', str(e))
         return None
 
     id = res['_id']
