@@ -2,15 +2,12 @@ from dotenv import load_dotenv
 import discord
 
 from lib.logger import logger
-from lib.es_utils import search_es, index_es, index_es_bot, parse_hits
-from lib.chatgpt_utils import send, build_context
-from lib.bot_utils import periodic_task
-from lib.tts_utils import process_text
 
 load_dotenv()
 
 
 intents = discord.Intents.default()
+intents.members = True
 client = discord.Client(intents=intents)
 
 
@@ -26,21 +23,23 @@ async def send_reply(user_message, bot_message):
 
     try:
         await channel.send(bot_message)
+        return True
     except Exception as e:
         logger.error(
             f'Error sending message to {user_message.author.display_name}: ', str(e))
-        return
+        return False
 
 
-async def send_dm(channel, message):
-    try:
-        await channel.send(message)
-        logger.debug(
-            f'sent message to {channel.recipient.display_name}: {message}')
-    except Exception as e:
-        logger.error(
-            f'Error sending message to {channel.recipient.display_name}: ', str(e))
-        return
+async def send_dm(user_id, message):
+    await client.wait_until_ready()
+
+    user = client.get_user(int(user_id))
+    if user:
+        await user.send(message)
+        return True
+    else:
+        logger.warn(f'Failed to send dm - user {user_id} not found.')
+        return False
 
 
 async def send_tts(user_message, audio_path):

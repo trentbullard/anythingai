@@ -27,13 +27,12 @@ python main.py
 
 ## Features ##
 The application is still a work in progress. Here are the features currently being implemented:
+- More personalities
+- Post-prompt for filtering 'As an AI/LLM' responses
+- Aggregated Memory
 - Fix voice channel text-to-speech functionality
-- Finish implementing random bot messages
 - Add bot commands for the following features:
-  - Change the bot's name
-  - Enable/disable random bot messages
   - Enable/disable text-to-speech
-  - Implement different bot personalities
 
 ## Contributing ##
 Contributions to the project are welcome! If you find any issues or have suggestions for improvements, feel free to open an issue or submit a pull request.

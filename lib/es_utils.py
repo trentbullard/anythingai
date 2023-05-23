@@ -13,10 +13,11 @@ load_dotenv()
 es = Elasticsearch(hosts=[os.getenv('ELASTICSEARCH_URL')])
 
 
-def index_es(user_value, message_value):
+def index_es(user_value, message_value, random_message=False):
     try:
+        timestamp = f'{datetime.utcnow().isoformat()}Z'
         res = es.index(index='chatbot', body={'user': user_value, 'user_message': message_value.content,
-                       'channel_id': message_value.channel.id, 'timestamp': datetime.now().isoformat()}, id=f'{user_value}-{datetime.now().isoformat()}')
+                       'channel_id': message_value.channel.id, 'timestamp': timestamp, 'random_message': random_message}, id=f'{user_value}-{timestamp}')
     except Exception as e:
         logger.error(
             f'Error indexing message {message_value.content} from {user_value}: ', str(e))
@@ -109,7 +110,7 @@ def get_user_settings(user_id):
             return {}
     except Exception as e:
         logger.error(f'Error retrieving user settings for {user_id}: {str(e)}')
-        return 
+        return
 
 
 def create_user_settings(user_id, user_settings):
@@ -126,7 +127,8 @@ def update_user_settings(user_id, field_values):
         es.update(index='usersettings', id=user_id, body={'doc': field_values})
         return True
     except Exception as e:
-        logger.error(f'Error updating the user settings for {user_id}: {str(e)}')
+        logger.error(
+            f'Error updating the user settings for {user_id}: {str(e)}')
         return False
 
 
@@ -135,9 +137,11 @@ def parse_hits(response):
     sorted_hits = py_.sort_by(hits, ['timestamp'])
     messages = []
     for i in range(len(sorted_hits)):
-        timestamp = datetime.fromisoformat(sorted_hits[i]['timestamp'])
-        delta = humanize.naturaltime(timestamp, datetime.now())
-        messages.append({'role': 'system' if i == 0 else 'user',
+        timestamp = datetime.strptime(
+            sorted_hits[i]['timestamp'], '%Y-%m-%dT%H:%M:%S.%fZ')
+        delta = humanize.naturaltime(timestamp, when=datetime.utcnow())
+        role = 'system' if i == 0 or bool(sorted_hits[i]['random_message']) else 'user'
+        messages.append({'role': role,
                         'content': f"({delta}) {sorted_hits[i]['user_message']}"})
         if 'bot_message' in sorted_hits[i]:
             messages.append(

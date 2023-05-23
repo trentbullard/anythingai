@@ -17,8 +17,16 @@ def list_commands_command(_, message, commands):
 def check_user_settings(user_id, display_name):
     user_settings = get_user_settings(user_id)
     if user_settings == None:
-        create_user_settings(user_id, {"bot_name": None, "personality": None,
-                             "user_name": None, "random_message": None, "random_message_cooldown": None, "display_name": display_name})
+        create_user_settings(user_id, {
+            "bot_name": None,
+            "personality": None,
+            "user_name": None,
+            "random_message": None,
+            "random_message_cooldown": None,
+            "display_name": display_name,
+            "last_user_message_sent": None,
+            "next_random_message": None
+        })
         user_settings = get_user_settings(user_id)
     return user_settings
 

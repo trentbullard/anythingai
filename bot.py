@@ -1,14 +1,16 @@
 import os
+import asyncio
+from datetime import datetime
 
 from dotenv import load_dotenv
 import discord
 import json
 
 from lib.logger import logger
-from lib.es_utils import search_es, index_es, index_es_bot, parse_hits, get_user_settings
+from lib.es_utils import search_es, index_es, index_es_bot, parse_hits, get_user_settings, create_user_settings, update_user_settings
 from lib.chatgpt_utils import send, build_context
-from lib.discord_utils import get_client, send_reply
-from lib.bot_utils import parse_commands
+from lib.discord_utils import get_client, send_reply, send_dm
+from lib.bot_utils import parse_commands, periodic_task, get_random_message_datetime
 
 load_dotenv()
 
@@ -24,7 +26,7 @@ with open('bot_commands.json') as f:
 @client.event
 async def on_ready():
     logger.info('We have logged in as {0.user}'.format(client))
-    # asyncio.ensure_future(periodic_task(send_dm, client.private_channels))
+    asyncio.ensure_future(periodic_task(client))
 
 
 @client.event
@@ -40,14 +42,20 @@ async def on_message(message):
     logger.debug(f'User settings found for ({message.author.id}) {message.author.display_name}')
     if user_settings is None:
         user_settings = {
-            'user_id': message.author.id,
             'user_name': message.author.display_name,
             'bot_name': 'FriendBot',
             'personality': 'standard',
-            'randomcontact': False,
+            'random_message': False,
+            'random_message_cooldown': 24,
         }
-    else:
-        user_settings['user_id'] = message.author.id
+        create_user_settings(message.author.id, user_settings)
+    update_user_settings(message.author.id, {
+        'last_user_message_sent': f'{datetime.utcnow().isoformat()}Z',
+        'next_random_message': get_random_message_datetime(24, 24 * 3, datetime.utcnow()),
+    })
+    
+
+    user_settings['user_id'] = message.author.id
 
     command_name, args = parse_commands(message.content)
     if command_name is not None:
@@ -96,9 +104,8 @@ async def on_message(message):
     # if audio_path:
     #   await send_tts(message, audio_path)
 
-    await send_reply(message, chatgpt_response)
-
-    index_es_bot(message_id, chatgpt_response)
+    if await send_reply(message, chatgpt_response):
+        index_es_bot(message_id, chatgpt_response)
 
 
 client.run(os.getenv('DISCORD_BOT_TOKEN'))
