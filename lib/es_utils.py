@@ -132,6 +132,38 @@ def update_user_settings(user_id, field_values):
         return False
 
 
+def get_bot_memory(user_id):
+    try:
+        response = es.get(index='botmemory', id=user_id)
+        if 'found' in response and response['found']:
+            return response['_source']
+        else:
+            logger.warn(f'Bot memory not found for {user_id}')
+            return {}
+    except Exception as e:
+        logger.error(f'Error retrieving bot memory for {user_id}: {str(e)}')
+        return
+    
+
+def create_bot_memory(user_id):
+    try:
+        es.create(index='botmemory', id=user_id, body={})
+        return True
+    except Exception as e:
+        logger.error(f'Error creating bot memory for {user_id}: {str(e)}')
+        return False
+    
+
+def update_bot_memory(user_id, field_values):
+    try:
+        es.update(index='botmemory', id=user_id, body={'doc': field_values})
+        return True
+    except Exception as e:
+        logger.error(
+            f'Error updating the bot memory for {user_id}: {str(e)}')
+        return False
+
+
 def parse_hits(response):
     hits = [hit['_source'] for hit in response['hits']['hits']]
     sorted_hits = py_.sort_by(hits, ['timestamp'])

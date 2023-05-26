@@ -11,6 +11,7 @@ from lib.es_utils import search_es, index_es, index_es_bot, parse_hits, get_user
 from lib.chatgpt_utils import send, build_context
 from lib.discord_utils import get_client, send_reply, send_dm
 from lib.bot_utils import parse_commands, periodic_task, get_random_message_datetime
+from lib.memory_utils import merge_memory, get_memory
 
 load_dotenv()
 
@@ -36,14 +37,16 @@ async def on_message(message):
 
     if message.channel.type not in [discord.ChannelType.private, discord.ChannelType.text]:
         return
-    
+
     if message.channel.type == discord.ChannelType.text:
         if message.clean_content == '':
             return
-    
-    logger.info(f'({message.author.id}) {message.author.display_name}: {message.content}')
+
+    logger.info(
+        f'({message.author.id}) {message.author.display_name}: {message.content}')
     user_settings = get_user_settings(message.author.id)
-    logger.debug(f'User settings found for ({message.author.id}) {message.author.display_name}')
+    logger.debug(
+        f'User settings found for ({message.author.id}) {message.author.display_name}')
     if user_settings is None:
         user_settings = {
             'user_name': message.author.display_name,
@@ -57,7 +60,6 @@ async def on_message(message):
         'last_user_message_sent': f'{datetime.utcnow().isoformat()}Z',
         'next_random_message': get_random_message_datetime(24, 24 * 3, datetime.utcnow()),
     })
-    
 
     user_settings['user_id'] = message.author.id
 
@@ -74,12 +76,14 @@ async def on_message(message):
                 return
 
             try:
-                command_module = __import__(f'lib.commands.{module_name}', fromlist=[function_name])
+                command_module = __import__(
+                    f'lib.commands.{module_name}', fromlist=[function_name])
                 command_function = getattr(command_module, function_name)
                 if command_data['async']:
                     command_response = await command_function(args, message, commands)
                 else:
-                    command_response = command_function(args, message, commands)
+                    command_response = command_function(
+                        args, message, commands)
 
                 await send_reply(message, command_response)
             except (ImportError, AttributeError) as e:
@@ -97,11 +101,12 @@ async def on_message(message):
     messages = parse_hits(search_es(user_settings['user_id']))
     message_id = index_es(user_settings['user_id'], message)
     messages.append({'role': 'user', 'content': message.clean_content})
-    
-    context = build_context(user_settings, messages)
-    logger.debug(context)
+
+    memory = get_memory(user_settings['user_id'])
+    context = build_context(user_settings, messages, memory)
+    logger.debug('context: ', context)
     chatgpt_response = send(context)
-    logger.debug(chatgpt_response)
+    logger.debug(f'chatbot response: {chatgpt_response}')
 
     # audio_path = process_text(chatgpt_response, "en-US-Wavenet-H", "happy", user)
     # logger.debug(f"audio path: {audio_path}")
@@ -110,6 +115,8 @@ async def on_message(message):
 
     if await send_reply(message, chatgpt_response):
         index_es_bot(message_id, chatgpt_response)
+
+    merge_memory(user_settings, message.clean_content, chatgpt_response)
 
 
 client.run(os.getenv('DISCORD_BOT_TOKEN'))
