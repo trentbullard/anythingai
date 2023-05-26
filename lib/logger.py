@@ -6,11 +6,11 @@ logger.setLevel(logging.DEBUG)
 # File handler
 file_handler = logging.FileHandler('logs/chatbot.log', encoding='utf-8')
 file_handler.setLevel(logging.DEBUG)
-file_handler.setFormatter(logging.Formatter('[%(asctime)s] (%(levelname)s) - %(message)s'))
+file_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s     %(message)s', datefmt='%Y-%m-%d %H:%M:%S'))
 logger.addHandler(file_handler)
 
 # Console handler
 console_handler = logging.StreamHandler()
 console_handler.setLevel(logging.DEBUG)
-console_handler.setFormatter(logging.Formatter('[%(asctime)s] (%(levelname)s) - %(message)s'))
+console_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s     %(message)s', datefmt='%Y-%m-%d %H:%M:%S'))
 logger.addHandler(console_handler)
