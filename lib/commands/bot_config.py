@@ -67,7 +67,7 @@ def my_name_command(args, message, _):
         return f'oh no :( {" ".join(args)} is not a valid name'
 
 
-def random_contact_command(args, message, _):
+def random_message_command(args, message, _):
     user_id = message.author.id
     user_settings = check_user_settings(user_id, message.author.display_name)
     if len(args) == 0:
@@ -94,7 +94,7 @@ def random_contact_command(args, message, _):
         return f'i dont know what you mean by {" ".join(args)}. i only understand "on" and "off" for this command'
 
 
-def random_contact_cooldown_command(args, message, _):
+def random_message_cooldown_command(args, message, _):
     user_id = message.author.id
     user_settings = check_user_settings(user_id, message.author.display_name)
     if len(args) == 0:

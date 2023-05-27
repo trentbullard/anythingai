@@ -17,17 +17,17 @@
     "async": false,
     "help": "The myname command changes what i will call you. If you dont supply a new name, i'll tell you what i currently know you as. If you want to change your name to something other than your discord name, i will only accept names that are a single word. Usage: !myname <new name>"
   },
-  "randomcontact": {
+  "randommessage": {
     "module": "bot_config",
-    "function": "random_contact_command",
+    "function": "random_message_command",
     "async": false,
-    "help": "The randomcontact command determines whether i will send you random messages. If you dont supply a command value, i will tell you whether i am currently allowed to send you random messages. Usage: !randomcontact <on/off>"
+    "help": "The randommessage command determines whether i will send you random messages. If you dont supply a command value, i will tell you whether i am currently allowed to send you random messages. Usage: !randommessage <on/off>"
   },
-  "randomcontactcooldown": {
+  "randommessagecooldown": {
     "module": "bot_config",
-    "function": "random_contact_cooldown_command",
+    "function": "random_message_cooldown_command",
     "async": false,
-    "help": "The randomcontactcooldown command determines how long i will wait after your last message to send you a random message. I cannot send random message if you have messaged me less than 6 hours ago, unfortunately. If you do not give me a new number of hours to wait, i will tell you the minimum number of hours i will wait before sending you a random message. Usage: !randomcontactcooldown <cooldown in hours>"
+    "help": "The randommessagecooldown command determines how long i will wait after your last message to send you a random message. I cannot send a random message if you have messaged me less than 6 hours ago, unfortunately. If you do not give me a new number of hours to wait, i will tell you the minimum number of hours i will wait before sending you a random message. Usage: !randommessagecooldown <cooldown in hours>"
   },
   "personality": {
     "module": "bot_config",
