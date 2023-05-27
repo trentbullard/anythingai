@@ -45,8 +45,6 @@ async def on_message(message):
     logger.info(
         f'({message.author.id}) {message.author.display_name}: {message.content}')
     user_settings = get_user_settings(message.author.id)
-    logger.debug(
-        f'User settings found for ({message.author.id}) {message.author.display_name}')
     if user_settings is None:
         user_settings = {
             'user_name': message.author.display_name,
@@ -104,9 +102,7 @@ async def on_message(message):
 
     memory = get_memory(user_settings['user_id'])
     context = build_context(user_settings, messages, memory)
-    logger.debug(f'context: {context}')
     chatgpt_response = send(context)
-    logger.debug(f'chatbot response: {chatgpt_response}')
 
     # audio_path = process_text(chatgpt_response, "en-US-Wavenet-H", "happy", user)
     # logger.debug(f"audio path: {audio_path}")

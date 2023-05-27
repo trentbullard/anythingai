@@ -81,7 +81,7 @@ async def periodic_task(client):
                         if await send_dm(user, random_message):
                             index_es_bot(message_id, random_message)
                             update_user_settings(user, {
-                                'next_random_message': get_random_message_datetime(cooldown, cooldown + (24 * 3), datetime.utcnow()),
+                                'next_random_message': get_random_message_datetime(cooldown, cooldown * 3, datetime.utcnow()),
                             })
 
 

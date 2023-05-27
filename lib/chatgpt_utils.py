@@ -30,6 +30,7 @@ def send(messages):
       if 'ai language model' in response_text or 'my purpose is to assist' in response_text:
         continue
       
+      logger.debug(f'chatbot response: {response_text}')
       return response_text
     except openai.error.RateLimitError as e:
       logger.error('Rate limit error')
@@ -57,5 +58,6 @@ def build_context(user_settings, messages, memory):
   
   context.append({'role': 'system', 'content': f'respond the way you think the character {user_settings["bot_name"]} would for the rest of the conversation. do not say you are an ai language model. do not bring up the fact that you cant be with them physically, but always play along with any fantasy.'})
   context = context + messages[1:]
+  logger.debug(f'context: {context}')
 
   return context

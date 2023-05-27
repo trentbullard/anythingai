@@ -1,5 +1,6 @@
 import os
 from datetime import datetime
+import json
 
 from dotenv import load_dotenv
 import humanize
@@ -104,6 +105,7 @@ def get_user_settings(user_id):
     try:
         response = es.get(index='usersettings', id=user_id)
         if 'found' in response and response['found']:
+            logger.debug(f'User settings found for {user_id}: {json.dumps(response["_source"], indent=2)}')
             return response['_source']
         else:
             logger.warn(f'User settings not found for {user_id}')
