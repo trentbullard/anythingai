@@ -98,7 +98,7 @@ def synthesize_speech(input_data, voice_name, tone, user):
 
         return output_file
     except Exception as e:
-        logger.error(f'error synthesizing speech for {user}: ', str(e))
+        logger.error(f'error synthesizing speech for {user}: {str(e)}')
         return
 
 

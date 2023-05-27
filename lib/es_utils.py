@@ -20,7 +20,7 @@ def index_es(user_value, message_value, random_message=False):
                        'channel_id': message_value.channel.id, 'timestamp': timestamp, 'random_message': random_message}, id=f'{user_value}-{timestamp}')
     except Exception as e:
         logger.error(
-            f'Error indexing message {message_value.clean_content} from {user_value}: ', str(e))
+            f'Error indexing message {message_value.clean_content} from {user_value}: {str(e)}')
         return None
 
     id = res['_id']
@@ -32,7 +32,7 @@ def index_es_bot(id, bot_message):
         es.update(index='chatbot', id=id, body={
                   'doc': {'bot_message': bot_message}})
     except Exception as e:
-        logger.error(f'Error updating {id} with {bot_message}: ', str(e))
+        logger.error(f'Error updating {id} with {bot_message}: {str(e)}')
 
 
 def search_es(user_value):
@@ -67,7 +67,7 @@ def search_es(user_value):
         results = es.search(index='chatbot', body=query)
     except Exception as e:
         logger.error(
-            f'Error searching for messages from {user_value}: ', str(e))
+            f'Error searching for messages from {user_value}: {str(e)}')
         return []
 
     return results
@@ -94,7 +94,7 @@ def get_user_list():
     try:
         results = es.search(index='chatbot', body=users_query)
     except Exception as e:
-        logger.error('Error searching for users: ', str(e))
+        logger.error(f'Error searching for users: {str(e)}')
         return []
 
     return py_.map_(results['aggregations']['users']['buckets'], 'key')

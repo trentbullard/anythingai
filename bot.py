@@ -9,7 +9,7 @@ import json
 from lib.logger import logger
 from lib.es_utils import search_es, index_es, index_es_bot, parse_hits, get_user_settings, create_user_settings, update_user_settings
 from lib.chatgpt_utils import send, build_context
-from lib.discord_utils import get_client, send_reply, send_dm
+from lib.discord_utils import get_client, send_reply
 from lib.bot_utils import parse_commands, periodic_task, get_random_message_datetime
 from lib.memory_utils import merge_memory, get_memory
 
@@ -87,10 +87,10 @@ async def on_message(message):
 
                 await send_reply(message, command_response)
             except (ImportError, AttributeError) as e:
-                logger.error(f'Error importing command {command_name}: ', e)
+                logger.error(f'Error importing command {command_name}: {str(e)}')
                 await send_reply(message, f'Error importing command {command_name}')
             except Exception as e:
-                logger.error(f'Error running command {command_name}: ', e)
+                logger.error(f'Error running command {command_name}: {str(e)}')
                 await send_reply(message, f'Error running command {command_name}')
         else:
             logger.warn(f'Command {command_name} not found')
@@ -104,7 +104,7 @@ async def on_message(message):
 
     memory = get_memory(user_settings['user_id'])
     context = build_context(user_settings, messages, memory)
-    logger.debug('context: ', context)
+    logger.debug(f'context: {context}')
     chatgpt_response = send(context)
     logger.debug(f'chatbot response: {chatgpt_response}')
 

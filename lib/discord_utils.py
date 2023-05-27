@@ -28,7 +28,7 @@ async def send_reply(user_message, bot_message):
         return True
     except Exception as e:
         logger.error(
-            f'Error sending message to {user_message.author.display_name}: ', str(e))
+            f'Error sending message to {user_message.author.display_name}: {str(e)}')
         return False
 
 
