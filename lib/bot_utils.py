@@ -10,6 +10,7 @@ from lib.chatgpt_utils import build_context, send
 from lib.discord_utils import send_dm
 from lib.template_utils import render
 from lib.commands.bot_config import personalities
+from lib.memory_utils import get_memory
 
 
 TIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%fZ'
@@ -62,7 +63,7 @@ async def periodic_task(client):
                     if datetime.utcnow() > next_random_message:
                         logger.info(f'sending random message to {user}')
                         
-                        random_message_context = build_context(user_settings, parse_hits(es_response))
+                        random_message_context = build_context(user_settings, parse_hits(es_response), memory=get_memory(user))
                         
                         last_user_message_sent = datetime.strptime(user_settings['last_user_message_sent'], TIME_FORMAT)
                         time_since_last_user_message = datetime.utcnow() - last_user_message_sent
